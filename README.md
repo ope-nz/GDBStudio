@@ -107,35 +107,6 @@ nothing renders inside the tool itself
 
 ---
 
-## Build
-
-```
-build\build.cmd          compile everything and run the tests
-build\build.cmd notest   compile only
-```
-
-Output lands in `bin\`:
-
-| File | What |
-|---|---|
-| `GdbStudio.Core.dll` | Model, XML reader/writer, validation rules, diff engine, renderers, arcpy script generators |
-| `gdbstudio.exe` | Command-line tool - see [CLI reference](#cli-reference) below |
-| `GdbStudioEditor.exe` | The WinForms editor |
-| `GdbStudio.Tests.exe` | Dependency-free test runner; exit code is the number of failures |
-
-`GdbStudio.Core.dll`, `gdbstudio.exe` and `GdbStudioEditor.exe` are code-signed with
-`signtool.exe` (Windows SDK) using whatever code-signing certificate `/a` finds in the
-current user's certificate store, timestamped against DigiCert. Signing is skipped, not
-failed, when `signtool.exe` isn't found at its default Windows Kits path, so the build
-still succeeds on a machine with no certificate installed. The test runner is left
-unsigned; it isn't distributed.
-
-To use a newer C# compiler without installing anything, extract the
-`Microsoft.Net.Compilers.Toolset` NuGet package into `build\tools\`; the build script picks
-up `tools\tasks\net472\csc.exe` automatically.
-
----
-
 ## CLI reference
 
 ```
@@ -162,12 +133,6 @@ are `--name value` or `--name=value`; a flag with no value (like `--open`) is a 
 | `arcpy migrate` | `gdbstudio arcpy migrate <a.xml> <b.xml> [out.py] [--gdb PATH] [--no-delete] [--ignore-sr] [--ignore-tracking]` | Writes a Python migration script from a diff of two documents. |
 | `templates` | `gdbstudio templates` | Lists the embedded "new object" template names. |
 | `version` | `gdbstudio version` | Prints the product name and build date. |
-
-`vsdx` (native Visio export) is reserved but not implemented - it prints a pointer to
-`PLAN.md` and exits `2`. In the meantime, export `drawio` and use diagrams.net's own
-"Export as > VSDX".
-
-Full detail, examples, and exit codes: [`docs/cli.md`](docs/cli.md).
 
 ### Quick examples
 
@@ -199,45 +164,6 @@ objects, the coordinate system library, validation, comparison, and every Export
 
 ## Documentation
 
-`docs\` is a self-contained [docsify](https://docsify.js.org/) site. Serve it locally and open
-it in a browser (docsify fetches Markdown by relative URL, which browsers block from a
-`file://` page):
-
-```
-powershell -ExecutionPolicy Bypass -File web\viewer\serve.ps1
-```
-
-then open `http://localhost:8080/docs/index.html`. If `docs\assets\vendor\*.min.js` is
-missing, populate it once with `docs\assets\vendor\fetch-vendor.ps1` (needs internet).
-
-| Page | Covers |
-|---|---|
-| [Getting Started](docs/getting-started.md) | First commands against a real schema |
-| [Editor](docs/editor.md) | The WinForms editor, end to end |
-| [HTML Viewer](docs/viewer.md) | What the exported viewer shows, and how to iterate on its source |
-| [arcpy Scripts](docs/arcpy.md) | Create and migration script generation, type mapping |
-| [Command Line](docs/cli.md) | Every command, every flag, exit codes |
-| [Validation Rules](docs/validation.md) | Every rule, what it checks, and why some are more permissive than they look |
-| [XML Workspace Document](docs/xml-format.md) | Namespace handling, what the model understands, schema paths |
-| [Architecture](docs/architecture.md) | Project layout, the core library's design |
-
-[`RULES.md`](RULES.md) is a quick-reference copy of the validation rule table for browsing
-without leaving the repo root.
-
----
-
-## Layout
-
-```
-build/      build.cmd and one .rsp per assembly
-src/        GdbStudio.Core, GdbStudio.Cli, GdbStudio.Editor
-tests/      GdbStudio.Tests (dependency-free runner)
-web/viewer/ HTML viewer source (caco3, Phosphor, Mermaid vendored under lib/); serve.ps1 for local testing
-data/       legacy XSLT, XSD and template fragments (see NOTICE.txt)
-docs/       the docsify documentation site
-samples/    esri/ sample documents; private/ is git-ignored
-```
-
 ### Working on the HTML viewer
 
 The viewer's HTML, CSS, and JavaScript live under `web\viewer` (`viewer.html`,
@@ -259,11 +185,8 @@ browser refresh, no rebuild needed. `web\viewer\dev` is git-ignored.
 ## Attribution
 
 A handful of data files (`data\xslt\*.xslt`, `data\xsd\*.xsd`, `data\templates\*.xml`) are
-copied from Esri's ArcGIS Diagrammer sample code and redistributed under
-[`data\ESRI-SAMPLE-CODE-LICENSE.txt`](data/ESRI-SAMPLE-CODE-LICENSE.txt); everything else is
-this project's own code. See [`NOTICE.txt`](NOTICE.txt) for the full detail, including why
-the required attribution names only Esri and not the third-party UI/diagramming components
-the original sample application (but not this project) also happened to use.
+copied from Esri's ArcGIS Diagrammer sample code; everything else is
+this project's own code.
 
 Developed by [Ope Ltd](https://www.ope.nz).
 
